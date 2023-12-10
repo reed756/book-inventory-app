@@ -1,4 +1,4 @@
-import db from "../connection";
+import db from "../connection.js";
 import format from "pg-format";
 
 const createTable = async (tableName, tableSchema) => {

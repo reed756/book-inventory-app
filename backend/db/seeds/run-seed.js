@@ -1,9 +1,10 @@
-import testData from "../data/test-data";
-const seed = require("./seed.js");
-const db = require("../connection.js");
+import testData from "../data/test-data/index.js";
+import seed from "./seed.js";
+import db from "../connection.js";
 
-const runSeed = () => {
-  return seed(testData).then(() => db.end());
+const runSeed = async () => {
+  await seed(testData);
+  return db.end();
 };
 
 runSeed();

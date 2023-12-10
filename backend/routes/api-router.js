@@ -1,3 +1,7 @@
+import booksRouter from "./books-router.js";
+import authorsRouter from "./authors-router.js";
+import categoriesRouter from "./categories-router.js";
+
 import express from "express";
 
 const router = express.Router();
