@@ -2,7 +2,7 @@ import db from "../connection.js";
 import format from "pg-format";
 
 const createTable = async (tableName, tableSchema) => {
-  await db.query(`DROP TABLE IF EXISTS ${tableName}`);
+  await db.query(`DROP TABLE IF EXISTS ${tableName} CASCADE`);
   await db.query(tableSchema);
 };
 
@@ -11,7 +11,7 @@ const seed = async (data) => {
 
   const authorsSchema = `
     CREATE TABLE authors (
-      author_id int not null primary key,
+      author_id serial primary key,
       first_name varchar(50) not null,
       last_name varchar(50) not null,
       birth_date timestamp not null,
@@ -22,18 +22,18 @@ const seed = async (data) => {
 
   const categoriesSchema = `
     CREATE TABLE categories (
-      category_id int not null primary key,
-      name varchar(20) not null
-      description varchar(50) not null
+      category_id serial primary key,
+      name varchar(20) not null,
+      description varchar(100) not null
     );
   `;
 
   const booksSchema = `
     CREATE TABLE books (
-      book_id int not null primary key,
+      book_id serial primary key,
       title varchar(50) not null,
-      author_id int not null foreign key references authors(author_id),
-      category_id int not null foreign key references categories(category_id),
+      author_id int not null references authors(author_id),
+      category_id int not null references categories(category_id),
       isbn varchar(13) NOT NULL,
       publication_date timestamp,
       description varchar(200) not null,
@@ -51,8 +51,8 @@ const seed = async (data) => {
 
   // Insert data
   const insertAuthorsQuery = format(
-    `insert into authors (first_name, last_name, birth_date, death_date, bio) VALUES %L RETURNING *;`,
-    authorsData.map((author) => [author.firstName, author.lastName, author.birthDate, author.deathDate, bio])
+    `INSERT INTO authors (first_name, last_name, birth_date, death_date, bio) VALUES %L RETURNING *;`,
+    authorsData.map((author) => [author.firstName, author.lastName, author.birthDate, author.deathDate, author.bio])
   );
 
   const insertCategoriesQuery = format(
