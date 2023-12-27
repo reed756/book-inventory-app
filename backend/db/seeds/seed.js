@@ -7,7 +7,7 @@ const createTable = async (tableName, tableSchema) => {
 };
 
 const seed = async (data) => {
-  const { authorsData, booksData, categoriesData } = data;
+  const { authorsData, booksData, categoriesData, usersData } = data;
 
   const authorsSchema = `
     CREATE TABLE authors (
@@ -44,10 +44,20 @@ const seed = async (data) => {
     );
   `;
 
+  const usersSchema = `
+    CREATE TABLE users (
+      user_id serial primary key,
+      username varchar(50) not null,
+      email varchar(50) not null,
+      image_path varchar(200)
+      );
+    `;
+
   // Create tables
   await createTable("authors", authorsSchema);
   await createTable("categories", categoriesSchema);
   await createTable("books", booksSchema);
+  await createTable("users", usersSchema);
 
   // Insert data
   const insertAuthorsQuery = format(
@@ -65,9 +75,15 @@ const seed = async (data) => {
     booksData.map((book) => [book.title, book.authorId, book.categoryId, book.isbn, book.publicationDate, book.description, book.price, book.quantityInStock, book.language, book.format])
   );
 
+  const insertUsersQuery = format(
+    `INSERT INTO users (username, email, image_path) VALUES %L RETURNING *;`,
+    usersData.map((user) => [user.userName, user.email, user.imagePath])
+  );
+
   await db.query(insertAuthorsQuery);
   await db.query(insertCategoriesQuery);
   await db.query(insertBooksQuery);
+  await db.query(insertUsersQuery);
 };
 
 export default seed;
